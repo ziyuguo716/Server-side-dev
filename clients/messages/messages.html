@@ -1,0 +1,118 @@
+<html>
+
+<body>
+
+    <p id="error"><b></b></p>
+    <p id="output"><b></b></p>
+    <button id="profile" type="button" onclick="changeProfile()">Change Profile</button>
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <button id="signout" type="button" onclick="signOut()">SIGN OUT</button>
+    <br />
+  
+    <br />
+    <h3> Please go to Inspect -> Console to check events sent from Gateway via websocket connection!!</h3>
+    <br />
+    <br />
+    <h3> Search users</h3>
+    <header>Enter 'username/firstname/lastname' Here</header>
+    <input type="text" id="query"> <button id="search" onclick="sendSearchRequest()">Search</button>
+
+    <div></div>
+
+    <script type="text/javascript" src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        signInSuccess();
+        function signInSuccess() {
+            $("#error").text("Success!");
+            $("#output").text(localStorage.getItem('Names'));
+        }
+
+        document.getElementById("signout").onclick = function () { signOut() };
+        function signOut() {
+            var url = "https://api.ziyuguo.me/v1/sessions/mine";
+            $("#error").text("");
+            $.ajax({
+                url: url,
+                type: "DELETE",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', localStorage.getItem('Authorization'));
+                },
+                success: function (res, status, xhr) {
+                    logOutSuccess(res, status, xhr);
+                },
+                error: function (response) {
+                    $("#error").text(JSON.stringify(response.responseText));
+                }
+            });
+        }
+
+        function logOutSuccess(res, status, xhr) {
+            $("#error").text("Logged Out");
+            localStorage.removeItem('Authorization');
+            location.href = "index.html"
+        }
+
+        document.getElementById("profile").onclick = function () { changeProfile() };
+        function changeProfile() {
+            location.href = "profile.html"
+        }
+
+        function sendSearchRequest() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        render(this.responseText);
+                    }
+                }
+            };
+            var qString = document.getElementById("query").value;
+            xhttp.open("GET", "https://api.ziyuguo.me/v1/users?q=" + qString, true);
+            xhttp.setRequestHeader('Authorization', localStorage.getItem('Authorization'));
+            xhttp.send();
+        }
+        function render(s) {
+            $("p").remove();
+            $("img").remove();
+
+            var obj = JSON.parse(s);
+            $.each(obj, function (i) {
+                if (obj[i].userName != undefined) {
+                    $("div").append("<p>UserName: " + obj[i].userName + "</p>");
+                }
+                if (obj[i].firstName != undefined) {
+                    $("div").append("<p>FirstName: " + obj[i].firstName + "</p>");
+                }
+                if (obj[i].lastName != undefined) {
+                    $("div").append("<p>LastName: " + obj[i].lastName + "</p>");
+                }
+                if (obj[i].photoURL != undefined) {
+                    $("div").append("<img " + "src=" + obj[i].photoURL + ">");
+                }
+            });
+        }
+
+    </script>
+    <script>
+
+        let sock;
+        sock = new WebSocket("wss://api.ziyuguo.me/v1/ws" + "?auth=" + localStorage.getItem('Authorization'));
+
+        sock.onopen = () => {
+            console.log("Connection Opened");
+        };
+
+        sock.onclose = () => {
+            console.log("Connection Closed");
+        };
+
+        sock.onmessage = (msg) => {
+            console.log("Message received " + msg.data);
+        };
+
+    </script>

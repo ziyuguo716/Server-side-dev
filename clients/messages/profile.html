@@ -1,0 +1,45 @@
+<html>
+
+<body>
+    <form>
+        firstname:<input type="text" id="firstname"><br/>
+        lastname:<input type="text" id="lastname"><br/>
+        <button id="profile" type="button" onclick="submitChange()">Change</button>
+    </form>
+
+    <p id="error"><b></b></p>
+    <p id="output"><b></b></p>
+
+    <script type="text/javascript" src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+    <script>
+        document.getElementById("profile").onclick = function () { submitChange() };
+        
+        function submitChange() {
+            var url = "https://api.ziyuguo.me/v1/users/me";
+            $.ajax({
+                url:url, 
+                type:"PATCH",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', localStorage.getItem('Authorization'));
+                },
+                data:JSON.stringify({
+                    "firstName": document.getElementById("firstname").value,
+                    "lastName": document.getElementById("lastname").value
+                }),
+                contentType:"application/json",
+                // headers: { 'Authorization': localStorage.getItem('Authorization')},
+                success: function (res, status, xhr) {
+                    changeProfileSuccess(res, status, xhr);
+                },
+                error: function(response) { 
+                    $("#error").text(JSON.stringify(response.responseText));
+                }
+            });
+        }
+
+        function changeProfileSuccess(res, status, xhr){
+            $("#error").text("changeProfileSuccess");
+            location.href = "messages.html"
+        }
+        
+    </script>

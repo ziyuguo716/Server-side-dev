@@ -1,0 +1,93 @@
+<DOCTYPE html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </head>
+    <html>
+        <body>
+            <h1> HTML Summary Client</h1>
+            <header>Enter URL Here</header>
+            <input type="text" id="url"> <button onclick="sendRequest()">Search</button> 
+            <div></div>
+            
+            <script type="text/javascript">
+                function sendRequest() {
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        if (this.readyState == 4) {
+                            if(this.status == 200){
+                                render(this.responseText);
+                            }
+                        }
+                    };
+                    var urlString = document.getElementById("url").value;
+                    xhttp.open("GET", "https://api.ziyuguo.me/v1/summary?url=" + urlString, true);
+                    xhttp.send();
+                }
+    
+                function render(s) {
+                    $("p").remove();
+    
+                    var obj = JSON.parse(s)
+    
+                    if (obj.type != undefined){
+                        $("div").append("<p>Type: " + obj.type + "</p>");
+                    }
+                    if (obj.url != undefined){
+                        $("div").append("<p>URL: " + obj.url + "</p>");
+                    }
+                    if (obj.title != undefined){
+                        $("div").append("<p>Title: " + obj.title + "</p>");
+                    }
+                    if (obj.siteName != undefined){
+                        $("div").append("<p>Site Name: " + obj.siteName + "</p>");
+                    }
+                    if (obj.description != undefined){
+                        $("div").append("<p>Description: " + obj.description + "</p>");
+                    }
+                    if (obj.author != undefined){
+                        $("div").append("<p>Author: " + obj.author + "</p>");
+                    }
+                    if (obj.keywords != undefined){
+                        var kw = "";
+                        for (i in obj.keywords){
+                            if (i==0) {
+                                kw += obj.keywords[i];
+                            } else {
+                                kw = kw + ', ' + obj.keywords[i]
+                            }
+                        }
+                        $("div").append("<p>Keywords: " + kw + "</p>");
+                    }
+                    if (obj.icon != undefined) {
+                        var img = renderImage(obj.icon);
+                        $("div").append("<p>Icon: " + img + "</p>");
+                    }
+                    if (obj.images != undefined) {
+                        var img = "";
+                        for (imagObj of obj.images){
+                            img += renderImage(imagObj);
+                        }
+                        $("div").append("<p>Images: " + img + "</p>");
+                    }
+                }
+    
+                function renderImage(imageObj) {
+                    var img = "<img ";
+                    img = img + "src='" + imageObj.url + "' ";
+    
+                    if (imageObj.width != null) {
+                        img = img + "width='" + imageObj.width + "' ";
+                    }
+                    if (imageObj.height != null) {
+                        img = img + "height='" + imageObj.height + "' ";
+                    }
+                    if (imageObj.alt != null) {
+                        img = img + "alt='" + imageObj.alt + "' ";
+                    }
+                    img += ">"
+    
+                    return img;
+                }
+            </script>
+        </body>
+    </html>

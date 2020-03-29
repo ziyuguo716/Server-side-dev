@@ -1,0 +1,114 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Welcome!</title>
+</head>
+
+<body>
+    <form>
+        Sign Up: <br />
+        <br />
+        email:<input type="text" id="email"><br />
+        username:<input type="text" id="username"><br />
+        firstname:<input type="text" id="firstname"><br />
+        lastname:<input type="text" id="lastname"><br />
+        password:<input type="password" id="password"><br />
+        passwordconf:<input type="password" id="passwordconf"><br />
+        <button id="signup" type="button" onclick="signUp()">SIGN UP</button>
+        <br />
+        <br />
+    </form>
+
+    <form>
+        Sign In: <br />
+        <br />
+        Email:<input type="text" id="emailIN"><br />
+        password:<input type="password" id="passwordIN"><br />
+        <button id="signin" type="button" onclick="signIn()">SIGN IN</button>
+    </form>
+
+    <p id="error"><b></b></p>
+    <p id="output"><b></b></p>
+
+    <table id="article_table" class="table table-bordered ">
+    </table>
+
+    <script type="text/javascript" src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+    <script>
+
+        document.getElementById("signup").onclick = function () { signUp() };
+
+        function signUp() {
+            var url = "https://api.ziyuguo.me/v1/users";
+            $("#error").text("");
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({
+                    "email": document.getElementById("email").value,
+                    "userName": document.getElementById("username").value,
+                    "firstName": document.getElementById("firstname").value,
+                    "lastName": document.getElementById("lastname").value,
+                    "password": document.getElementById("password").value,
+                    "passwordConf": document.getElementById("passwordconf").value
+                }),
+                contentType: "application/json",
+                success: function (res, status, xhr) {
+                    signUpSuccess(res, status, xhr);
+                },
+                error: function (response) {
+                    $("#error").text(JSON.stringify(response.responseText));
+                }
+            });
+        }
+
+        function signUpSuccess(res, status, xhr) {
+            $("#error").text("Sign Up Successful");
+            successActions(res, status, xhr);
+        }
+
+        document.getElementById("signin").onclick = function () { signIn() };
+
+        function signIn() {
+            var url = "https://api.ziyuguo.me/v1/sessions";
+            $("#error").text("");
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({
+                    "email": document.getElementById("emailIN").value,
+                    "password": document.getElementById("passwordIN").value
+                }),
+                contentType: "application/json",
+                success: function (res, status, xhr) {
+                    signInSuccess(res, status, xhr);
+                },
+                error: function (response) {
+                    $("#error").text(JSON.stringify(response.responseText));
+                }
+            });
+        }
+
+        function signInSuccess(res, status, xhr) {
+            $("#error").text("Sign In Successful");
+            successActions(res, status, xhr);
+        }
+
+        function successActions(res, status, xhr) {
+            var data = xhr.responseText;
+            var jsonResponse = JSON.parse(data);
+            $("#output").text(jsonResponse["firstName"]);
+            $("#output").append(" ");
+            $("#output").append(jsonResponse["lastName"]);
+
+            localStorage.setItem('Authorization', xhr.getResponseHeader("Authorization"));
+            localStorage.setItem('Names', jsonResponse["firstName"] + " " + jsonResponse["lastName"]);
+
+            location.href = "messages.html"
+        }
+
+    </script>
+</body>
+
+</html>
