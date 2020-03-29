@@ -1,9 +1,9 @@
-# INFO 344 Challenges
+# Ziyu's Server Side Project
 
-This repo was created for you by GitHub Classroom. **DO NOT FORK THIS REPO INTO YOUR OWN ACCOUNT!** It is already private. Only you and the teaching team can see the code in this repo. Please make all of your commits to branches in this repo.
+•	This repo includes both front-end and back-end of a chat web application (similar to Slack) using an API gateway-based microservice architecture and deployed both client and server to cloud on AWS EC2 instances.
+•	The Golang API gateway handles HTTPS termination, authentication, authorization, session management, Websocket connections with clients. 
+•	The messaging microservice exposes REST APIs for CRUD operations for messages and channels.
+•	A trie data structure is implemnted to index all user profiles and enable instant search suggestions as user types in search bar
 
-Clone this repo to your development machine. For each challenge, check out the branch listed in the Canvas assignment description. Make all commits for a given challenge only to that challenge branch, and push that branch up to GitHub. 
+The diagram below displays the basic architecture of the system.
 
-When you are finished with challenge, [create a GitHub Pull Request](https://help.github.com/articles/creating-a-pull-request/), asking to merge all commits from your challenge branch back into the `master` branch. We will use that pull request to provide detailed inline feedback on your code.
-
-Note that you can still add commits to the branch after you create the pull request, and those new commits will be automatically added to the pull request as long as it's still open.
